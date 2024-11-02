@@ -1,0 +1,15 @@
+{% extends 'base1.html' %}
+{% block content %}
+    <div class="create_project_box">
+        <h1>Create Project</h1>
+        <div class="create_project_box_form">
+            <form method="POST">
+                {{ form.hidden_tag() }}
+
+                {{ form.name(class="form-control project", placeholder="Project name") }}
+                {{ form.description(class="form-control project description", placeholder="Description") }}
+                {{ form.submit(class="primary project") }}
+            </form>
+        </div>
+    </div>
+{% endblock %}

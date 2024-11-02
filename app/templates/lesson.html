@@ -1,0 +1,46 @@
+{% extends 'base1.html' %}
+{% block content %}
+<h1>{{ lesson.title }}</h1>
+<p>{{ lesson.description }}</p>
+
+<div>
+    {{ content|safe }}
+</div>
+<!-- Render each quiz inside the lesson -->
+{% for quiz in quizzes %}
+    <h3>{{ quiz.title }}</h3>
+    <form action="{{ url_for('main.submit_quiz', quiz_id=quiz.id) }}" method="POST">
+        {% for question in quiz.questions %}
+            <div>
+                <label>{{ question['text'] }}</label><br>
+
+                <!-- String input -->
+                {% if question['type'] == 'string' %}
+                    <input type="text" name="question_{{ loop.index }}">
+
+                <!-- Multiple choice -->
+                {% elif question['type'] == 'mcq' %}
+                    {% for option in question['options'].split(',') %}
+                        <input type="radio" name="question_{{ loop.index }}" value="{{ option }}"> {{ option }}<br>
+                    {% endfor %}
+
+                <!-- Yes/No question -->
+                {% elif question['type'] == 'yes_no' %}
+                    <input type="radio" name="question_{{ loop.index }}" value="Yes"> Yes
+                    <input type="radio" name="question_{{ loop.index }}" value="No"> No
+
+                <!-- Boolean (True/False) question -->
+                {% elif question['type'] == 'boolean' %}
+                    <input type="radio" name="question_{{ loop.index }}" value="True"> True
+                    <input type="radio" name="question_{{ loop.index }}" value="False"> False
+
+                <!-- Textarea for longer answers -->
+                {% elif question['type'] == 'textarea' %}
+                    <textarea name="question_{{ loop.index }}"></textarea>
+                {% endif %}
+            </div>
+        {% endfor %}
+        <input type="submit" value="Submit Quiz">
+    </form>
+{% endfor %}
+{% endblock %}

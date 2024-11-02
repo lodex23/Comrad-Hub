@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Conrad Hub</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
+
+</head>
+<body>
+    <nav class="navbar">
+        <h1>Conrad Hub</h1>
+        <button class="nameBtn" id="nameBtn">{{ current_user.name }}</button>
+        <div class="user-dropdown" id="userDropdown">
+            <a href="#">Profile Settings</a>
+            <a href="/logout">Logout</a>
+        </div>
+    </nav>
+    <main>
+        <div class="navigation">
+            <ul>
+                <li><a href="/Dashboard">Home</a></li>
+                <li><a href="/projects">Projects</a></li>
+                <li><a href="/lessons">Training</a></li>
+            </ul>
+        </div>
+        <div class="main_content">
+            {% block content %}
+            {% endblock %}
+        </div>
+    </main>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const userButton = document.getElementById('nameBtn'); // Get button by ID
+            const dropdownMenu = document.getElementById('userDropdown'); // Get dropdown by ID
+
+            // Toggle dropdown on button click
+            userButton.addEventListener('click', function (event) {
+                event.stopPropagation(); // Prevent click from closing the dropdown immediately
+                dropdownMenu.style.display = dropdownMenu.style.display === 'block' ? 'none' : 'block';
+            });
+
+            // Hide dropdown when clicking outside of it
+            document.addEventListener('click', function () {
+                dropdownMenu.style.display = 'none';
+            });
+
+            // Hide dropdown on mouse leave
+            dropdownMenu.addEventListener('mouseleave', function () {
+                dropdownMenu.style.display = 'none';
+            });
+        });
+
+    </script>
+</body>
+</html>

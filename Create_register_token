@@ -1,0 +1,8 @@
+from app import db
+from app.models import RegistrationToken
+import secrets
+
+token = RegistrationToken(token=secrets.token_hex(32))
+db.session.add(token)
+db.session.commit()
+print(f"Generated token: {token.token}")

@@ -1,0 +1,115 @@
+{% extends 'base1.html' %}
+{% block content %}
+
+<h1 class="quiz_page_title">Create Quiz</h1>
+<form method="POST" action="{{ url_for('main.create_quiz', lesson_id=lesson_id) }}" class="quiz_form">
+  {{ form.hidden_tag() }}
+
+  <!-- Quiz Title Input -->
+  <div class="quiz_title_input">
+    {{ form.title(class="form-control quiz", placeholder="Quiz Title") }}
+  </div>
+
+  <!-- Questions Section -->
+  <h3 class="questions_title_header">Questions</h3>
+  <div id="questions-container" class="questions_form">
+    {% for question in form.questions %}
+      {{ form.hidden_tag() }}
+      <div class="question-form mb-3" id="question-{{ loop.index }}">
+        <!-- Question Text -->
+        <div class="form-group">
+          {{ question.question_text.label }}<br>
+          {{ question.question_text(class="form-control question_inputs") }}
+        </div>
+
+        <!-- Question Type -->
+        <div class="form-group">
+          {{ question.question_type.label }}<br>
+          {{ question.question_type(class="form-control question_inputs") }}
+        </div>
+
+        <!-- Options for Multiple Choice -->
+        <div class="form-group">
+          {{ question.options.label }}<br>
+          {{ question.options(class="form-control question_inputs", rows="3") }}
+        </div>
+
+        <!-- Remove Button for Each Question -->
+        <button type="button" class="primary create_quiz remove" onclick="removeQuestion({{ loop.index }})">Remove Question</button>
+      </div>
+    {% endfor %}
+  </div>
+
+  <!-- Add Question Button -->
+  <button type="button" class="primary create_quiz" onclick="addQuestion()">Add Question</button>
+
+  <!-- Submit Button -->
+  {{ form.submit(class="primary create_quiz") }}
+</form>
+
+
+<!-- Template for Adding New Questions Dynamically -->
+<template id="question-template">
+  <div class="question-form mb-3">
+    <input type="hidden" name="csrf_token" value="{{ form.csrf_token.data }}">
+    <div class="form-group">
+      <label for="question_text_">Question Text</label><br>
+      <input type="text" name="questions--question_text" class="form-control question_inputs" placeholder="Enter question text">
+    </div>
+
+    <div class="form-group">
+      <label for="question_type_">Question Type</label><br>
+      <select name="questions--question_type" class="form-control question_inputs">
+        <option value="string">String Input</option>
+        <option value="mcq">Multiple Choice</option>
+        <option value="yes_no">Yes/No</option>
+        <option value="boolean">True/False</option>
+        <option value="textarea">Text Area</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="options_">Options (comma separated)</label><br>
+      <input type="text" name="questions--options" class="form-control question_inputs" placeholder="Enter options for multiple choice questions">
+    </div>
+
+    <button type="button" class="primary create_quiz remove" onclick="removeQuestion()">Remove Question</button>
+  </div>
+</template>
+
+
+<!-- JavaScript to Add and Remove Questions -->
+<script>
+  let questionCount = {{ form.questions | length }};  // Start from the existing number of questions
+
+  // Function to add a new question
+  function addQuestion() {
+    questionCount++;  // Increment the question count
+
+    // Clone the question template
+    const template = document.getElementById('question-template').content.cloneNode(true);
+    const newQuestion = template.querySelector('.question-form');
+
+    // Update the template with the new question's number
+    newQuestion.id = `question-${questionCount}`;
+    newQuestion.querySelector('input[name="questions--question_text"]').name = `questions-${questionCount}-question_text`;
+    newQuestion.querySelector('select[name="questions--question_type"]').name = `questions-${questionCount}-question_type`;
+    newQuestion.querySelector('input[name="questions--options"]').name = `questions-${questionCount}-options`;
+
+    // Add a remove button with the correct question id
+    newQuestion.querySelector('button').setAttribute('onclick', `removeQuestion(${questionCount})`);
+
+    // Append the new question to the container
+    document.getElementById('questions-container').appendChild(newQuestion);
+  }
+
+  // Function to remove a question
+  function removeQuestion(questionId) {
+    const questionDiv = document.getElementById(`question-${questionId}`);
+    if (questionDiv) {
+      questionDiv.remove();  // Remove the question div from the DOM
+    }
+  }
+</script>
+
+{% endblock %}

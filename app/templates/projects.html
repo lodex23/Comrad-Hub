@@ -1,0 +1,16 @@
+{% extends 'base1.html' %}
+{% block content %}
+    <div class="project_window">
+        <h1>Projects</h1>
+        <ul>
+            {% for project in projects %}
+            <li>{{ project.name }}  <a href="{{ url_for('main.project_dashboard', project_id=project.id) }}">View Project</a></li>
+            {% endfor %}
+        </ul>
+
+        <a href="{{ url_for('main.add_project') }}">
+            <button>Add Project</button>
+        </a>
+
+    </div>
+{% endblock %}

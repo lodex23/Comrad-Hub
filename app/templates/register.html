@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% block content %}
+    <div class="welcome_page">
+        <div class="login_box register">
+            <div class="login_box-header">
+                <h1>Conrad Hub</h1><br>
+                <p>Powered by Conrad Capital</p>
+            </div>
+            <div class="login_details">
+                <form method="POST" action="{{ url_for('main.register') }}">
+                    {{ form.hidden_tag() }}
+
+                    {{ form.Name(class="form-control register", placeholder="Name") }}
+                    {{ form.email(class="form-control register", placeholder="Email") }}
+
+                    {{ form.password(class="form-control register", placeholder="Password") }}
+                    {{ form.confirm_password(class="form-control register", placeholder="Confirm password") }}
+                    {{ form.token(class="form-control register", placeholder="Register token") }}
+                    {{ form.submit(class="primary register") }}
+
+
+                </form><br>
+                {% if form.errors %}
+                    <ul>
+                        {% for field, errors in form.errors.items() %}
+                            {% for error in errors %}
+                                <li>{{ error }}</li>
+                            {% endfor %}
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            </div>
+        </div>
+        <a href="/" class="register_btn">Heb je al een account?</a>
+    </div>
+{% endblock %}
