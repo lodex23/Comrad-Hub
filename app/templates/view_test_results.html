@@ -1,0 +1,85 @@
+{% extends "base1.html" %}
+
+{% block content %}
+<div class="hw_result">
+    <h2 class="hw_result_title">Huiswerkresultaten</h2>
+
+    <canvas id="scoreChart"></canvas>
+    <script>
+        const results = {{ results | tojson }};
+
+
+        console.log("Results data:", results);
+
+        const labels = results.map(result => result.student_name);
+        const scores = results.map(result => result.score);
+
+        const ctx = document.getElementById('scoreChart').getContext('2d');
+
+const scoreChart = new Chart(ctx, {
+    type: 'bar',  // Use 'bar', 'line', 'pie', etc. depending on your needs
+    data: {
+        labels: labels,  // Array of student names
+        datasets: [{
+            label: 'Scores',
+            data: scores,  // Array of scores
+            backgroundColor: 'rgba(3, 40, 9, 0.5)',  // Light color for bars
+            borderColor: '#e8d4a5',  // Darker color for borders
+            borderWidth: 1
+        }]
+    },
+    options: {
+        responsive: true,  // Make the chart responsive
+        scales: {
+            y: {
+                beginAtZero: true,  // Start the Y-axis at 0
+                title: {
+                    display: true,
+                    text: 'Score'  // Y-axis title
+                }
+            },
+            x: {
+                title: {
+                    display: true,
+                    text: 'Student Names'  // X-axis title
+                }
+            }
+        },
+        plugins: {
+            legend: {
+                display: true,
+                position: 'top'  // Position of the legend
+            },
+            tooltip: {
+                callbacks: {
+                    label: function(tooltipItem) {
+                        return tooltipItem.dataset.label + ': ' + tooltipItem.raw;  // Custom tooltip
+                    }
+                }
+            }
+        }
+    }
+});
+
+    </script>
+
+    <table class="hw_result_table">
+        <tbody>
+        <tr>
+            <th>Student</th>
+            <th>Huiswerk les</th>
+            <th>Score</th>
+            <th>Opmerkingen</th>
+        </tr>
+        {% for result in results %}
+        <tr>
+            <td>{{ result.student_name }}</td>
+            <td>{{ result.homework_id }}</td>
+            <td>{{ result.score }}</td>
+            <td>{{ result.comments }}</td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

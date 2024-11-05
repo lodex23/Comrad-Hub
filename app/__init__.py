@@ -4,7 +4,6 @@ from flask_login import LoginManager
 from config import Config
 from flask_socketio import SocketIO
 from flask_migrate import Migrate
-import psycopg2
 
 # Initialize extensions
 db = SQLAlchemy()
@@ -27,6 +26,9 @@ def create_app():
     # Import and register blueprints after initialization to avoid circular imports
     from app.routes import bp as main_bp
     app.register_blueprint(main_bp)
+
+
+
 
     return app
 

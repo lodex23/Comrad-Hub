@@ -1,7 +1,9 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField, PasswordField, TextAreaField, SelectField, FieldList, FormField
+from wtforms import StringField, SubmitField, PasswordField, TextAreaField, SelectField, FieldList, FormField, IntegerField
 from wtforms.validators import DataRequired, Email, EqualTo, Length
 import psycopg2
+from app.models import User, Test
+
 class RegistrationForm(FlaskForm):
     Name = StringField('Name', validators=[DataRequired()])
     email = StringField('Email', validators=[DataRequired(), Email()])
@@ -48,3 +50,16 @@ class HomeworkSubmissionForm(FlaskForm):
 class TestSubmissionForm(FlaskForm):
     answers = TextAreaField('Test Answers (JSON Format)', validators=[DataRequired()])
     submit = SubmitField('Submit Test')
+
+class TestResultForm(FlaskForm):
+    user_id = SelectField('Student', coerce=int, validators=[DataRequired()])
+    Test_id = SelectField('Test', coerce=int, validators=[DataRequired()])
+    score = IntegerField('Score', validators=[DataRequired()])
+    comments = TextAreaField('Comments')
+    submit = SubmitField('Submit result')
+
+    def __init__(self, *args, **kwargs):
+        super(TestResultForm, self).__init__(*args, **kwargs)
+        self.user_id.choices = [(user.id, user.name) for user in User.query.all()]
+        self.Test_id.choices = [tests.id for tests in Test.query.all()]
+

@@ -2,11 +2,13 @@ from flask import Flask, render_template, request, redirect, url_for, Blueprint,
 from flask_login import current_user, login_required, login_user, logout_user
 from app import db
 from app.models import Project, Task, Note, Issue, RegistrationToken, User, Document, Lesson, Homework, Quiz, Test, HomeworkSubmission, TestSubmission
-from .forms import RegistrationForm, LoginForm, CreateProjectForm, CreateLessonForm, CreateHomeworkForm, CreateQuizForm, CreateTestForm
+from app.forms import RegistrationForm, LoginForm, CreateProjectForm, CreateLessonForm, CreateHomeworkForm, CreateQuizForm, CreateTestForm
 from werkzeug.security import generate_password_hash, check_password_hash
 from wtforms.validators import email
 import psycopg2
 from markdown2 import markdown
+from app.forms import TestResultForm
+
 
 bp = Blueprint('main', __name__)
 
@@ -203,3 +205,44 @@ def parse_content_with_markdown(content, lesson_id):
     return content_with_quiz
 def render_quiz_form(quiz):
     return render_template('quiz_form.html', quiz=quiz)
+
+@login_required
+@bp.route('/Test_results', methods=['GET', 'POST'])
+def test_results():
+    form = TestResultForm()
+    if form.validate_on_submit():
+        print('submit button oke')
+        result = TestSubmission(
+            user_id = form.user_id.data,
+            test_id = form.Test_id.data,
+            score = form.score.data,
+            comments = form.comments.data
+        )
+        db.session.add(result)
+        db.session.commit()
+        flash('Test results added successfully!', 'success')
+        return redirect(url_for('main.view_homework_results'))
+    return render_template('Test_Results.html', form=form)
+@login_required
+@bp.route('/view_homework_results')
+def view_homework_results():
+    results = TestSubmission.query.all()  # Haal alle huiswerkresultaten op
+    print(results)
+    # Voorbeeld van het ophalen van de student- en huiswerkinformatie
+    formatted_results = []
+    for result in results:
+        student = User.query.get(result.user_id)  # Haal de naam van de student op
+        print(student, student.name)
+        homework = Test.query.get(result.test_id)  # Haal de huiswerkdetails op
+        print(homework)
+        formatted_results.append({
+            'student_name': student.name,  # Veronderstelt dat 'name' een attribuut van User is
+            'homework_id': homework.id,
+            'score': result.score,
+            'comments': result.comments,
+        })
+        print(formatted_results)
+
+    return render_template('view_test_results.html', results=formatted_results)
+
+

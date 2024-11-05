@@ -124,8 +124,17 @@ class TestSubmission(db.Model):
     __tablename__ = 'test_submissions'
 
     id = db.Column(db.Integer, primary_key=True)
-    anwsers = db.Column(db.JSON, nullable=False)
-    submitted_by_id = db.Column(db.Integer, db.ForeignKey('User.id'), nullable=False)
+    submitted_by_id = db.Column(db.Integer, db.ForeignKey('User.id'))
     test_id = db.Column(db.Integer, db.ForeignKey('tests.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('User.id'), nullable=False)  # Foreign key to the Users table
     submitted_at = db.Column(db.DateTime, default=datetime.utcnow)
+    comments = db.Column(db.Text)
     score = db.Column(db.Float, nullable=True)
+class Test_Questions(db.Model):
+    __tablename__ = 'test_questions'
+
+    id = db.Column(db.Integer, primary_key=True)
+    test_id = db.Column(db.Integer, db.ForeignKey('tests.id'), nullable=False)
+    question_text = db.Column(db.Text, nullable=False)
+
+    test = db.relationship('Test', backref='test_questions', lazy=True)
